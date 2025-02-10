@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Clock</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            color: #333;
+            flex-direction: column;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .clock-toggle,
+        .theme-toggle,
+        .fullscreen-toggle {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .theme-toggle {
+            margin-bottom: 30px;
+        }
+
+        #digitalClock {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            transition: transform 0.5s;
+        }
+
+        .analog-clock {
+            display: none;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            border: 10px solid #333;
+            position: relative;
+            margin: 0 auto;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .hand {
+            position: absolute;
+            background-color: black;
+            transform-origin: 100%;
+            top: 50%;
+            left: 50%;
+            transition: transform 0.5s;
+        }
+
+        #hour {
+            width: 10px;
+            height: 60px;
+            background-color: black;
+            border-radius: 10px;
+        }
+
+        #minute {
+            width: 6px;
+            height: 90px;
+            background-color: #555;
+            border-radius: 10px;
+        }
+
+        #second {
+            width: 2px;
+            height: 100px;
+            background-color: red;
+        }
+
+        .number {
+            position: absolute;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .number:nth-child(1) { transform: rotate(0deg) translate(0, -120px); }
+        .number:nth-child(2) { transform: rotate(30deg) translate(0, -120px); }
+        .number:nth-child(3) { transform: rotate(60deg) translate(0, -120px); }
+        .number:nth-child(4) { transform: rotate(90deg) translate(0, -120px); }
+        .number:nth-child(5) { transform: rotate(120deg) translate(0, -120px); }
+        .number:nth-child(6) { transform: rotate(150deg) translate(0, -120px); }
+        .number:nth-child(7) { transform: rotate(180deg) translate(0, -120px); }
+        .number:nth-child(8) { transform: rotate(210deg) translate(0, -120px); }
+        .number:nth-child(9) { transform: rotate(240deg) translate(0, -120px); }
+        .number:nth-child(10) { transform: rotate(270deg) translate(0, -120px); }
+        .number:nth-child(11) { transform: rotate(300deg) translate(0, -120px); }
+        .number:nth-child(12) { transform: rotate(330deg) translate(0, -120px); }
+
+        .date {
+            margin-top: 20px;
+            font-size: 1rem;
+        }
+
+        .dark-mode {
+            background-color: #333;
+            color: white;
+        }
+
+        .dark-mode button {
+            background-color: #555;
+        }
+
+        .dark-mode .analog-clock {
+            border-color: white;
+        }
+
+        .dark-mode .hand {
+            background-color: white;
+        }
+
+        .dark-mode .hand#second {
+            background-color: red;
+        }
+
+        .fullscreen-toggle {
+            margin-top: 20px;
+        }
+
+        .full-screen-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .full-screen-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Zoom Effect for Digital Clock in Fullscreen */
+        .zoomed-digital-clock {
+            transform: scale(2);
+            font-size: 4rem;
+        }
+
+        /* Add margin between the fullscreen button and the digital clock in zoomed state */
+        .zoomed-digital-clock + .fullscreen-toggle {
+            margin-top: 1cm; /* 1cm space between the zoomed digital clock and fullscreen button */
+        }
+
+        /* Ensure that the buttons and clocks are spaced out */
+        .clock-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .clock-container > * {
+            margin-bottom: 20px;
+        }
+
+        /* Margin adjustments for improved layout */
+        .container > * {
+            margin: 10px 0;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="clock-toggle">
+            <button id="digitalToggle">Digital Clock</button>
+            <button id="analogToggle">Analog Clock</button>
+        </div>
+        <div class="theme-toggle">
+            <button id="themeToggle">Switch to Dark Mode</button>
+        </div>
+        <div class="fullscreen-toggle">
+            <button id="fullscreenToggle" class="full-screen-btn">Go Fullscreen</button>
+        </div>
+        <div class="clock-container">
+            <div id="digitalClock" class="digital-clock"></div>
+            <div id="analogClock" class="analog-clock">
+                <div id="hour" class="hand"></div>
+                <div id="minute" class="hand"></div>
+                <div id="second" class="hand"></div>
+                <div class="number">12</div>
+                <div class="number">1</div>
+                <div class="number">2</div>
+                <div class="number">3</div>
+                <div class="number">4</div>
+                <div class="number">5</div>
+                <div class="number">6</div>
+                <div class="number">7</div>
+                <div class="number">8</div>
+                <div class="number">9</div>
+                <div class="number">10</div>
+                <div class="number">11</div>
+            </div>
+        </div>
+        <div id="date" class="date"></div>
+    </div>
+
+    <script>
+        // Get elements
+        const digitalClock = document.getElementById('digitalClock');
+        const analogClock = document.getElementById('analogClock');
+        const hourHand = document.getElementById('hour');
+        const minuteHand = document.getElementById('minute');
+        const secondHand = document.getElementById('second');
+        const dateElement = document.getElementById('date');
+        const digitalToggle = document.getElementById('digitalToggle');
+        const analogToggle = document.getElementById('analogToggle');
+        const themeToggle = document.getElementById('themeToggle');
+        const fullscreenToggle = document.getElementById('fullscreenToggle');
+        let isFullscreen = false;
+
+        // Function to update the digital clock
+        function updateDigitalClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            let seconds = now.getSeconds();
+            let ampm = '';
+
+            // Format the time in 12-hour format
+            if (hours >= 12) {
+                ampm = 'PM';
+                if (hours > 12) hours -= 12;
+            } else {
+                ampm = 'AM';
+                if (hours === 0) hours = 12;
+            }
+
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+
+            // Update the digital clock display
+            digitalClock.textContent = `${hours}:${minutes}:${seconds} ${ampm}`;
+        }
+
+        // Function to update the analog clock
+        function updateAnalogClock() {
+            const now = new Date();
+            const hours = now.getHours() % 12;
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+
+            // Calculate the rotation angles for the hands
+            const hourDeg = (hours * 30) + (minutes / 2); // 30 degrees per hour
+            const minuteDeg = minutes * 6; // 6 degrees per minute
+            const secondDeg = seconds * 6; // 6 degrees per second
+
+            // Apply the rotations
+            hourHand.style.transform = `rotate(${hourDeg}deg)`;
+            minuteHand.style.transform = `rotate(${minuteDeg}deg)`;
+            secondHand.style.transform = `rotate(${secondDeg}deg)`;
+        }
+
+        // Function to display the date
+        function updateDate() {
+            const now = new Date();
+            const day = now.getDate();
+            const month = now.getMonth() + 1; // Months are zero-indexed
+            const year = now.getFullYear();
+            dateElement.textContent = `${day}/${month}/${year}`;
+        }
+
+        // Toggle between digital and analog clocks
+        digitalToggle.addEventListener('click', () => {
+            digitalClock.style.display = 'block';
+            analogClock.style.display = 'none';
+        });
+
+        analogToggle.addEventListener('click', () => {
+            digitalClock.style.display = 'none';
+            analogClock.style.display = 'flex';  // Ensure flex layout for centering
+        });
+
+        // Theme toggle for light/dark mode
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                themeToggle.textContent = 'Switch to Light Mode';
+            } else {
+                themeToggle.textContent = 'Switch to Dark Mode';
+            }
+        });
+
+        // Fullscreen toggle with zoom effect on the digital clock
+        fullscreenToggle.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.mozRequestFullScreen) { // Firefox
+                    document.documentElement.mozRequestFullScreen();
+                } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari, Opera
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
+                    document.documentElement.msRequestFullscreen();
+                }
+                isFullscreen = true;
+                digitalClock.classList.add('zoomed-digital-clock');  // Zoom the digital clock
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.mozCancelFullScreen) { // Firefox
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) { // Chrome, Safari, Opera
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) { // IE/Edge
+                    document.msExitFullscreen();
+                }
+                isFullscreen = false;
+                digitalClock.classList.remove('zoomed-digital-clock');  // Reset zoom on digital clock
+            }
+        });
+
+        // Update the clock and date every second
+        setInterval(() => {
+            updateDigitalClock();
+            updateAnalogClock();
+            updateDate();
+        }, 1000);
+
+    </script>
+</body>
+</html>
